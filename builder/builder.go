@@ -25,9 +25,20 @@ var dockerImageForLang = map[string]string{
 	"javascript":     "suborbital/builder-js",
 }
 
+// BuildConfig is the configuration for a Builder.
+type BuildConfig struct {
+	JsToolchain string
+}
+
+// DefaultBuildConfig is the default build configuration.
+var DefaultBuildConfig = BuildConfig{
+	JsToolchain: "npm",
+}
+
 // Builder is capable of building Wasm modules from source.
 type Builder struct {
 	Context *project.Context
+	Config  *BuildConfig
 
 	results []BuildResult
 
@@ -48,7 +59,7 @@ const (
 )
 
 // ForDirectory creates a Builder bound to a particular directory.
-func ForDirectory(logger util.FriendlyLogger, dir string) (*Builder, error) {
+func ForDirectory(logger util.FriendlyLogger, config *BuildConfig, dir string) (*Builder, error) {
 	ctx, err := project.ForDirectory(dir)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to project.ForDirectory")
@@ -56,6 +67,7 @@ func ForDirectory(logger util.FriendlyLogger, dir string) (*Builder, error) {
 
 	b := &Builder{
 		Context: ctx,
+		Config:  config,
 		results: []BuildResult{},
 		log:     logger,
 	}
@@ -221,7 +233,7 @@ func (b *Builder) checkAndRunPreReqs(runnable project.RunnableDir, result *Build
 			if errors.Is(err, os.ErrNotExist) {
 				b.log.LogStart(fmt.Sprintf("missing %s, fixing...", p.File))
 
-				fullCmd, err := p.GetCommand(runnable)
+				fullCmd, err := p.GetCommand(*b.Config, runnable)
 				if err != nil {
 					return errors.Wrap(err, "prereq.GetCommand")
 				}
