@@ -9,6 +9,9 @@ subo:
 subo/dev:
 	$(GO_INSTALL) -tags=development
 
+subo/docker-bin:
+	$(GO_INSTALL) -tags=docker
+
 subo/docker:
 	docker build . -t suborbital/subo:dev
 
@@ -26,4 +29,4 @@ tidy:
 lint:
 	golangci-lint run ./...
 
-.PHONY: subo subo/dev subo/docker subo/docker/publish subo/smoketest mod/replace/atmo tidy lint
+.PHONY: subo subo/dev subo/docker-bin subo/docker subo/docker/publish subo/smoketest mod/replace/atmo tidy lint test

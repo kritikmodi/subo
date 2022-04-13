@@ -1,4 +1,4 @@
-FROM golang:1.17
+FROM golang:1.18
 
 RUN mkdir -p /root/github.com/suborbital/subo
 WORKDIR /root/github.com/suborbital/subo
@@ -19,4 +19,4 @@ COPY scn ./scn
 COPY *.go ./
 COPY Makefile .
 
-RUN make subo
+RUN make subo/docker-bin
