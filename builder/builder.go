@@ -229,7 +229,7 @@ func (b *Builder) checkAndRunPreReqs(runnable project.RunnableDir, result *Build
 					return errors.Wrap(err, "prereq.GetCommand")
 				}
 
-				outputLog, err := util.RunInDir(fullCmd, runnable.Fullpath)
+				outputLog, err := util.RunWithWriter(fullCmd, runnable.Fullpath, b.writer)
 				if err != nil {
 					return errors.Wrapf(err, "util.RunInDir: %s", fullCmd)
 				}
